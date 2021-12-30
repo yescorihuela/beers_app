@@ -9,8 +9,6 @@ func (s BeerRepositoryStub) FindAll() ([]Beer, error) {
 }
 
 func NewBeerRepositoryStub() BeerRepositoryStub {
-	beers := []Beer{
-		{Id: "1", Name: "Yrvin"},
-	}
+	beers := []Beer{}
 	return BeerRepositoryStub{beers}
 }
