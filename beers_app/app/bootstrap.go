@@ -37,4 +37,5 @@ func (s *Server) registerRoutes() {
 	// bh := BeerHandlers{service: services.NewBeerService(domain.NewBeerRepositoryStub())}
 	bh := BeerHandlers{service: services.NewBeerService(domain.NewBeerRepositoryDatabase(s.database))}
 	s.engine.GET("/beers", bh.GetAllBeers)
+	s.engine.GET("/beers/:id", bh.GetAllBeers)
 }

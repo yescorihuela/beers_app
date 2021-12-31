@@ -20,6 +20,15 @@ func (brd BeerRepositoryDatabase) FindAll() ([]Beer, error) {
 	return beers, nil
 }
 
+func (brd BeerRepositoryDatabase) FindOne(beer_id int) (*Beer, error) {
+	var beer Beer
+	result := brd.client.First(&beer, "id = ?", beer_id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &beer, nil
+}
+
 func NewBeerRepositoryDatabase(db *gorm.DB) BeerRepositoryDatabase {
 	return BeerRepositoryDatabase{client: db}
 }

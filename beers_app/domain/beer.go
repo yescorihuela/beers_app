@@ -40,6 +40,6 @@ func ToDTOCollection(b []Beer) []api.BeerResponse {
 type BeerRepository interface {
 	FindAll() ([]Beer, error)
 	// These methods will be used in the real implementation
-	// FindOne(beer_id int) (Beer, error)
+	FindOne(int) (*Beer, error)
 	// Create(beer Beer) error
 }
