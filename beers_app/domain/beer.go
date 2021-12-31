@@ -2,6 +2,8 @@ package domain
 
 import (
 	"time"
+
+	"github.com/yescorihuela/beers_app/api"
 )
 
 type Beer struct {
@@ -14,6 +16,25 @@ type Beer struct {
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime:nano"`
 	UpdatedAt time.Time  `json:"updated_at" gorm:"autoUpdateTime:milli"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty" gorm:"autoUpdateTime:milli"`
+}
+
+func (b Beer) ToDTO() api.BeerResponse {
+	return api.BeerResponse{
+		Id:       b.Id,
+		Name:     b.Name,
+		Brewery:  b.Brewery,
+		Country:  b.Country,
+		Price:    b.Price,
+		Currency: b.Currency,
+	}
+}
+
+func ToDTOCollection(b []Beer) []api.BeerResponse {
+	beers := make([]api.BeerResponse, len(b))
+	for _, beer := range b {
+		beers = append(beers, beer.ToDTO())
+	}
+	return beers
 }
 
 type BeerRepository interface {
