@@ -9,7 +9,7 @@ import (
 type BeerService interface {
 	GetAllBeers() ([]api.BeerResponse, error)
 	GetBeer(id int) (*api.BeerResponse, error)
-	Create(req api.NewBeerRequest) (*api.NewBeerRequest, *errs.AppError)
+	Create(req api.NewBeerRequest) (*api.BeerResponse, *errs.AppError)
 }
 
 type DefaultBeerService struct {
