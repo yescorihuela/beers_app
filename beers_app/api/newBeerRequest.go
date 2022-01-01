@@ -27,5 +27,9 @@ func (nbr NewBeerRequest) Validate() *errs.AppError {
 		return errs.NewValidationError("Currency is required")
 	}
 
+	if nbr.Price == 0 {
+		return errs.NewValidationError("Price must be higher than zero")
+	}
+
 	return nil
 }
