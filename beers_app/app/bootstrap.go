@@ -19,7 +19,7 @@ type Server struct {
 
 func NewServer(host string, port uint) Server {
 	server := Server{
-		engine:   gin.New(),
+		engine:   gin.Default(), // New if your need incorporate middleware or your own logger | Default is better this case
 		httpAddr: fmt.Sprintf("%s:%d", host, port),
 		database: config.ConnectDatabase(),
 	}
