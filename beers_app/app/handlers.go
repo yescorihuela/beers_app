@@ -48,5 +48,5 @@ func (bh *BeerHandlers) Create(ctx *gin.Context) {
 		ctx.JSON(serviceError.Code, serviceError.AsMessage())
 		return
 	}
-	ctx.JSON(http.StatusOK, beer)
+	ctx.JSON(http.StatusCreated, beer)
 }
