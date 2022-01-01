@@ -13,28 +13,40 @@ type BeerHandlers struct {
 	service services.BeerService
 }
 
+var response api.DescriptionResponse
+
+const (
+	successMessage = "Operación exitosa"
+	beerCreated    = "Cerveza creada"
+)
+
 func (bh *BeerHandlers) GetAllBeers(ctx *gin.Context) {
 	beers, err := bh.service.GetAllBeers()
 	if err != nil {
-		ctx.JSON(err.Code, gin.H{"error": err.AsMessage()})
+		response.NewDescriptionResponse(err.Message, nil)
+		ctx.JSON(err.Code, response)
 		return
 	}
+	response.NewDescriptionResponse(successMessage, nil)
 	ctx.JSON(http.StatusOK, beers)
 }
 
 func (bh *BeerHandlers) GetBeer(ctx *gin.Context) {
 	beer_id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		response.NewDescriptionResponse(err.Error(), nil)
+		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
 	beer, serviceError := bh.service.GetBeer(beer_id)
 	if serviceError != nil {
-		ctx.JSON(serviceError.Code, serviceError.AsMessage())
+		response.NewDescriptionResponse(serviceError.Message, nil)
+		ctx.JSON(serviceError.Code, response)
 		return
 	}
-	ctx.JSON(http.StatusOK, beer)
+	response.NewDescriptionResponse(successMessage, beer)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (bh *BeerHandlers) GetBeerByBox(ctx *gin.Context) {
@@ -59,10 +71,12 @@ func (bh *BeerHandlers) GetBeerByBox(ctx *gin.Context) {
 
 	beer, serviceError := bh.service.GetBeerByBox(beer_id, float32(beer_quantity), beer_currency)
 	if serviceError != nil {
-		ctx.JSON(serviceError.Code, serviceError.AsMessage())
+		response.NewDescriptionResponse(serviceError.Message, nil)
+		ctx.JSON(serviceError.Code, response)
 		return
 	}
-	ctx.JSON(http.StatusOK, beer)
+	response.NewDescriptionResponse(successMessage, beer)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (bh *BeerHandlers) Create(ctx *gin.Context) {
@@ -71,10 +85,12 @@ func (bh *BeerHandlers) Create(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, err)
 	}
-	beer, serviceError := bh.service.Create(newBeer)
+	_, serviceError := bh.service.Create(newBeer)
 	if serviceError != nil {
-		ctx.JSON(serviceError.Code, serviceError.AsMessage())
+		response.NewDescriptionResponse(serviceError.Message, nil)
+		ctx.JSON(serviceError.Code, response)
 		return
 	}
-	ctx.JSON(http.StatusCreated, beer)
+	response.NewDescriptionResponse(beerCreated, nil)
+	ctx.JSON(http.StatusCreated, response)
 }

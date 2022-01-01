@@ -47,7 +47,6 @@ func (s DefaultBeerService) Create(req api.NewBeerRequest) (*api.BeerResponse, *
 		response := newBeer.ToDTO()
 		return &response, nil
 	}
-
 }
 
 func (s DefaultBeerService) GetBeerByBox(id int, quantity float32, currency string) (*api.BeerBoxTotalPrice, *errs.AppError) {
