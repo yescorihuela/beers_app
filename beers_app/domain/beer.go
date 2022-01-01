@@ -41,7 +41,7 @@ func (b Beer) ToDTO() api.BeerResponse {
 }
 
 func ToDTOCollection(b []Beer) []api.BeerResponse {
-	beers := make([]api.BeerResponse, len(b))
+	var beers []api.BeerResponse
 	for _, beer := range b {
 		beers = append(beers, beer.ToDTO())
 	}
