@@ -36,7 +36,7 @@ func (brd BeerRepositoryDatabase) Create(beer Beer) (*Beer, *errs.AppError) {
 		log.Fatalf("Error while creating a new beer %v", result.Error)
 		return nil, errs.NewUnexpectedError("Unexpected error from database")
 	}
-	return nil, nil
+	return &beer, nil
 }
 
 func NewBeerRepositoryDatabase(db *gorm.DB) BeerRepositoryDatabase {
