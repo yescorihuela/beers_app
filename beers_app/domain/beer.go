@@ -40,6 +40,12 @@ func (b Beer) ToDTO() api.BeerResponse {
 	}
 }
 
+func (b Beer) ToTotalPriceDTO(quantity float32) api.BeerBoxTotalPrice {
+	return api.BeerBoxTotalPrice{
+		Price: b.Price * quantity,
+	}
+}
+
 func ToDTOCollection(b []Beer) []api.BeerResponse {
 	var beers []api.BeerResponse
 	for _, beer := range b {

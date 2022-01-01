@@ -8,3 +8,7 @@ type BeerResponse struct {
 	Price    float32 `json:"price"`
 	Currency string  `json:"currency"`
 }
+
+type BeerBoxTotalPrice struct {
+	Price float32 `json:"Price Total"`
+}

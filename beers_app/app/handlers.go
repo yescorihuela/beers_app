@@ -37,6 +37,34 @@ func (bh *BeerHandlers) GetBeer(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, beer)
 }
 
+func (bh *BeerHandlers) GetBeerByBox(ctx *gin.Context) {
+	beer_id, beer_id_err := strconv.Atoi(ctx.Param("id"))
+	beer_currency := ctx.Query("currency")
+	beer_quantity, beer_quantity_err := strconv.ParseFloat(ctx.DefaultQuery("quantity", "6"), 32)
+
+	if beer_id_err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, beer_id_err)
+		return
+	}
+
+	if beer_currency == "" {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": "Currency is required"})
+		return
+	}
+
+	if beer_quantity_err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, beer_quantity_err)
+		return
+	}
+
+	beer, serviceError := bh.service.GetBeerByBox(beer_id, float32(beer_quantity), beer_currency)
+	if serviceError != nil {
+		ctx.JSON(serviceError.Code, serviceError.AsMessage())
+		return
+	}
+	ctx.JSON(http.StatusOK, beer)
+}
+
 func (bh *BeerHandlers) Create(ctx *gin.Context) {
 	var newBeer api.NewBeerRequest
 	err := ctx.BindJSON(&newBeer)
