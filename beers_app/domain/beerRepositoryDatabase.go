@@ -3,6 +3,7 @@ package domain
 import (
 	"log"
 
+	"github.com/yescorihuela/beers_app/errs"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +28,15 @@ func (brd BeerRepositoryDatabase) FindOne(beer_id int) (*Beer, error) {
 		return nil, result.Error
 	}
 	return &beer, nil
+}
+
+func (brd BeerRepositoryDatabase) Create(beer Beer) (*Beer, *errs.AppError) {
+	result := brd.client.Create(&beer)
+	if result.Error != nil {
+		log.Fatalf("Error while creating a new beer %v", result.Error)
+		return nil, errs.NewUnexpectedError("Unexpected error from database")
+	}
+	return nil, nil
 }
 
 func NewBeerRepositoryDatabase(db *gorm.DB) BeerRepositoryDatabase {

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/yescorihuela/beers_app/api"
+	"github.com/yescorihuela/beers_app/errs"
 )
 
 type Beer struct {
@@ -16,6 +17,16 @@ type Beer struct {
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime:nano"`
 	UpdatedAt time.Time  `json:"updated_at" gorm:"autoUpdateTime:milli"`
 	DeletedAt *time.Time `json:"deleted_at,omitempty" gorm:"autoUpdateTime:milli"`
+}
+
+func NewBeer(name, brewery, country, currency string, price float32) Beer {
+	return Beer{
+		Name:     name,
+		Brewery:  brewery,
+		Country:  country,
+		Price:    price,
+		Currency: currency,
+	}
 }
 
 func (b Beer) ToDTO() api.BeerResponse {
@@ -39,7 +50,6 @@ func ToDTOCollection(b []Beer) []api.BeerResponse {
 
 type BeerRepository interface {
 	FindAll() ([]Beer, error)
-	// These methods will be used in the real implementation
 	FindOne(int) (*Beer, error)
-	// Create(beer Beer) error
+	Create(beer Beer) (*Beer, *errs.AppError)
 }
