@@ -7,8 +7,8 @@ import (
 )
 
 type BeerService interface {
-	GetAllBeers() ([]api.BeerResponse, error)
-	GetBeer(id int) (*api.BeerResponse, error)
+	GetAllBeers() ([]api.BeerResponse, *errs.AppError)
+	GetBeer(id int) (*api.BeerResponse, *errs.AppError)
 	Create(req api.NewBeerRequest) (*api.BeerResponse, *errs.AppError)
 }
 
@@ -16,7 +16,7 @@ type DefaultBeerService struct {
 	repo domain.BeerRepository
 }
 
-func (s DefaultBeerService) GetAllBeers() ([]api.BeerResponse, error) {
+func (s DefaultBeerService) GetAllBeers() ([]api.BeerResponse, *errs.AppError) {
 	beers, err := s.repo.FindAll()
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func (s DefaultBeerService) GetAllBeers() ([]api.BeerResponse, error) {
 	return response, nil
 }
 
-func (s DefaultBeerService) GetBeer(id int) (*api.BeerResponse, error) {
+func (s DefaultBeerService) GetBeer(id int) (*api.BeerResponse, *errs.AppError) {
 	beer, err := s.repo.FindOne(id)
 	if err != nil {
 		return nil, err

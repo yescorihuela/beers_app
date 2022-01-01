@@ -14,19 +14,25 @@ type BeerHandlers struct {
 }
 
 func (bh *BeerHandlers) GetAllBeers(ctx *gin.Context) {
-	beers, _ := bh.service.GetAllBeers()
+	beers, err := bh.service.GetAllBeers()
+	if err != nil {
+		ctx.JSON(err.Code, gin.H{"error": err.AsMessage()})
+		return
+	}
 	ctx.JSON(http.StatusOK, beers)
 }
 
 func (bh *BeerHandlers) GetBeer(ctx *gin.Context) {
 	beer_id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, nil)
+		ctx.JSON(http.StatusInternalServerError, err)
+		return
 	}
 
-	beer, err := bh.service.GetBeer(beer_id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, nil)
+	beer, serviceError := bh.service.GetBeer(beer_id)
+	if serviceError != nil {
+		ctx.JSON(serviceError.Code, serviceError.AsMessage())
+		return
 	}
 	ctx.JSON(http.StatusOK, beer)
 }
@@ -35,11 +41,12 @@ func (bh *BeerHandlers) Create(ctx *gin.Context) {
 	var newBeer api.NewBeerRequest
 	err := ctx.BindJSON(&newBeer)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.JSON(http.StatusUnprocessableEntity, err)
 	}
 	beer, serviceError := bh.service.Create(newBeer)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": serviceError.AsMessage()})
+	if serviceError != nil {
+		ctx.JSON(serviceError.Code, serviceError.AsMessage())
+		return
 	}
 	ctx.JSON(http.StatusOK, beer)
 }
