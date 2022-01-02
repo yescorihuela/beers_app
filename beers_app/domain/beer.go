@@ -8,7 +8,7 @@ import (
 )
 
 type Beer struct {
-	Id        uint       `json:"id" gorm:"primaryKey;autoIncrement"`
+	Id        uint       `json:"id" gorm:"primaryKey;not null"`
 	Name      string     `json:"name"`
 	Brewery   string     `json:"brewery"`
 	Country   string     `json:"country"`
@@ -19,8 +19,9 @@ type Beer struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty" gorm:"autoUpdateTime:milli"`
 }
 
-func NewBeer(name, brewery, country, currency string, price float32) Beer {
+func NewBeer(id uint, name, brewery, country, currency string, price float32) Beer {
 	return Beer{
+		Id:       id,
 		Name:     name,
 		Brewery:  brewery,
 		Country:  country,
@@ -57,5 +58,6 @@ func ToDTOCollection(b []Beer) []api.BeerResponse {
 type BeerRepository interface {
 	FindAll() ([]Beer, *errs.AppError)
 	FindOne(int) (*Beer, *errs.AppError)
+	FindIfExists(uint) *errs.AppError
 	Create(beer Beer) (*Beer, *errs.AppError)
 }

@@ -40,7 +40,7 @@ func (s DefaultBeerService) Create(req api.NewBeerRequest) (*api.BeerResponse, *
 		return nil, err
 	}
 
-	beer := domain.NewBeer(req.Name, req.Brewery, req.Country, req.Currency, req.Price)
+	beer := domain.NewBeer(req.Id, req.Name, req.Brewery, req.Country, req.Currency, req.Price)
 	if newBeer, err := s.repo.Create(beer); err != nil {
 		return nil, err
 	} else {
