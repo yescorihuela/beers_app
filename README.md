@@ -46,4 +46,5 @@ docker compose up --build
 
 ### Pendientes:
 - Incorporar un logger custom
-- Incorporar autenticación vía quizás por JWT
+- Incorporar autenticación vía por JWT
+- Documentar a través de OpenAPI / Swagger
