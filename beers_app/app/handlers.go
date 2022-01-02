@@ -27,8 +27,9 @@ func (bh *BeerHandlers) GetAllBeers(ctx *gin.Context) {
 		ctx.JSON(err.Code, response)
 		return
 	}
-	response.NewDescriptionResponse(successMessage, nil)
-	ctx.JSON(http.StatusOK, beers)
+
+	response.NewDescriptionResponse(successMessage, beers)
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (bh *BeerHandlers) GetBeer(ctx *gin.Context) {

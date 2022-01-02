@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db_beers:
+    container_name: db_beers
+    image: "postgres:13"
+    volumes :
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+    env_file:
+      - .env.beers
+    ports:
+      - "9001:9001"
+    networks:
+      - beers_network
+    command: -p 9001
+
+  beers_backend:
+    build:
+      dockerfile: dockerfile.backend-beers
+      context: .
+    ports:
+      - 8082:8082
+    volumes:
+      - .:/test_ms_beer/beers_app
+    env_file:
+      - .env.beers
+    depends_on:
+      - db_beers
+    networks:
+      - beers_network
+
+networks:
+  beers_network:
+    driver: bridge
+
+volumes:
+    pgdata:
