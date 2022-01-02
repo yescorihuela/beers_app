@@ -3,6 +3,8 @@ package app
 import (
 	"fmt"
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/yescorihuela/beers_app/config"
@@ -11,17 +13,21 @@ import (
 	"gorm.io/gorm"
 )
 
+const timeout = 5 * time.Second
+
 type Server struct {
-	engine   *gin.Engine
-	httpAddr string
-	database *gorm.DB
+	engine     *gin.Engine
+	httpAddr   string
+	database   *gorm.DB
+	httpClient *http.Client
 }
 
 func NewServer(host string, port uint) Server {
 	server := Server{
-		engine:   gin.Default(), // New if your need incorporate middleware or your own logger | Default is better this case
-		httpAddr: fmt.Sprintf("%s:%d", host, port),
-		database: config.ConnectDatabase(),
+		engine:     gin.Default(), // New if your need incorporate middleware or your own logger | Default is better this case
+		httpAddr:   fmt.Sprintf("%s:%d", host, port),
+		database:   config.ConnectDatabase(),
+		httpClient: &http.Client{Timeout: timeout},
 	}
 	server.registerRoutes()
 	return server
@@ -35,7 +41,10 @@ func (s *Server) Run() error {
 func (s *Server) registerRoutes() {
 
 	// bh := BeerHandlers{service: services.NewBeerService(domain.NewBeerRepositoryStub())}
-	bh := BeerHandlers{service: services.NewBeerService(domain.NewBeerRepositoryDatabase(s.database))}
+	bh := BeerHandlers{
+		serviceBeer:     services.NewBeerService(domain.NewBeerRepositoryDatabase(s.database)),
+		serviceCurrency: services.NewCurrencyService(domain.NewCurrencyRepositoryExternal(s.httpClient)),
+	}
 	s.engine.GET("/beers", bh.GetAllBeers)
 	s.engine.GET("/beers/:id", bh.GetBeer)
 	s.engine.GET("/beers/:id/boxprice", bh.GetBeerByBox)
