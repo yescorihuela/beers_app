@@ -64,6 +64,8 @@ func ConnectoRedis() *redis.Client {
 	addr := fmt.Sprintf("%s:%s", os.Getenv("REDIS_HOST"), os.Getenv("REDIS_PORT"))
 	client, err := newRedisClient(addr)
 	if err != nil {
+		fmt.Println(addr)
+		log.Fatalln(err)
 		panic(err)
 	}
 	return client

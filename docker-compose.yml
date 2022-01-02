@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  db_redis:
+    image: "redis:6.2-alpine"
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --loglevel warning
+    volumes:
+      - cache:/data
+    networks:
+      - beers_network
+
   db_beers:
     container_name: db_beers
     image: "postgres:13"
@@ -16,16 +28,6 @@ services:
     command: -p 9001
     depends_on:
       - db_redis
-
-  redis:
-    image: redis:alpine
-    container_name: db_redis
-    ports:
-      - "6379:6379"
-    command: redis-server
-    volumes:
-      - $PWD/redis-data:/var/lib/redis
-      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
 
   beers_backend:
     build:
@@ -48,3 +50,5 @@ networks:
 
 volumes:
     pgdata:
+    cache:
+      driver: local
