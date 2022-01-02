@@ -40,9 +40,9 @@ func (b Beer) ToDTO() api.BeerResponse {
 	}
 }
 
-func (b Beer) ToTotalPriceDTO(quantity float32) api.BeerBoxTotalPrice {
+func (b Beer) ToTotalPriceDTO(quantity, convertedPrice float32) api.BeerBoxTotalPrice {
 	return api.BeerBoxTotalPrice{
-		Price: b.Price * quantity,
+		Price: convertedPrice * quantity,
 	}
 }
 

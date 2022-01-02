@@ -10,7 +10,7 @@ type BeerService interface {
 	GetAllBeers() ([]api.BeerResponse, *errs.AppError)
 	GetBeer(id int) (*api.BeerResponse, *errs.AppError)
 	Create(req api.NewBeerRequest) (*api.BeerResponse, *errs.AppError)
-	GetBeerByBox(id int, quantity float32, currency string) (*api.BeerBoxTotalPrice, *errs.AppError)
+	GetBeerByBox(c CurrencyService, id int, quantity float32, toCurrency string) (*api.BeerBoxTotalPrice, *errs.AppError)
 }
 
 type DefaultBeerService struct {
@@ -49,12 +49,16 @@ func (s DefaultBeerService) Create(req api.NewBeerRequest) (*api.BeerResponse, *
 	}
 }
 
-func (s DefaultBeerService) GetBeerByBox(id int, quantity float32, currency string) (*api.BeerBoxTotalPrice, *errs.AppError) {
+func (s DefaultBeerService) GetBeerByBox(c CurrencyService, id int, quantity float32, toCurrency string) (*api.BeerBoxTotalPrice, *errs.AppError) {
 	beer, err := s.repo.FindOne(id)
 	if err != nil {
 		return nil, err
 	}
-	response := beer.ToTotalPriceDTO(quantity)
+	convertedPrice, err := c.ConvertPrice(beer.Currency, toCurrency, beer.Price)
+	if err != nil {
+		return nil, err
+	}
+	response := beer.ToTotalPriceDTO(quantity, *convertedPrice)
 	return &response, nil
 }
 

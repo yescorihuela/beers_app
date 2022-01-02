@@ -10,7 +10,8 @@ import (
 )
 
 type BeerHandlers struct {
-	service services.BeerService
+	serviceBeer     services.BeerService
+	serviceCurrency services.CurrencyService
 }
 
 var response api.DescriptionResponse
@@ -21,7 +22,7 @@ const (
 )
 
 func (bh *BeerHandlers) GetAllBeers(ctx *gin.Context) {
-	beers, err := bh.service.GetAllBeers()
+	beers, err := bh.serviceBeer.GetAllBeers()
 	if err != nil {
 		response.NewDescriptionResponse(err.Message, nil)
 		ctx.JSON(err.Code, response)
@@ -33,14 +34,14 @@ func (bh *BeerHandlers) GetAllBeers(ctx *gin.Context) {
 }
 
 func (bh *BeerHandlers) GetBeer(ctx *gin.Context) {
-	beer_id, err := strconv.Atoi(ctx.Param("id"))
+	beerId, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		response.NewDescriptionResponse(err.Error(), nil)
 		ctx.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	beer, serviceError := bh.service.GetBeer(beer_id)
+	beer, serviceError := bh.serviceBeer.GetBeer(beerId)
 	if serviceError != nil {
 		response.NewDescriptionResponse(serviceError.Message, nil)
 		ctx.JSON(serviceError.Code, response)
@@ -51,26 +52,26 @@ func (bh *BeerHandlers) GetBeer(ctx *gin.Context) {
 }
 
 func (bh *BeerHandlers) GetBeerByBox(ctx *gin.Context) {
-	beer_id, beer_id_err := strconv.Atoi(ctx.Param("id"))
-	beer_currency := ctx.Query("currency")
-	beer_quantity, beer_quantity_err := strconv.ParseFloat(ctx.DefaultQuery("quantity", "6"), 32)
+	beerId, beerIdErr := strconv.Atoi(ctx.Param("id"))
+	toCurrency := ctx.Query("currency")
+	beerQuantity, beerQuantityErr := strconv.ParseFloat(ctx.DefaultQuery("quantity", "6"), 32)
 
-	if beer_id_err != nil {
-		ctx.JSON(http.StatusUnprocessableEntity, beer_id_err)
+	if beerIdErr != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, beerIdErr)
 		return
 	}
 
-	if beer_currency == "" {
+	if toCurrency == "" {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"error": "Currency is required"})
 		return
 	}
 
-	if beer_quantity_err != nil {
-		ctx.JSON(http.StatusUnprocessableEntity, beer_quantity_err)
+	if beerQuantityErr != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, beerQuantityErr)
 		return
 	}
 
-	beer, serviceError := bh.service.GetBeerByBox(beer_id, float32(beer_quantity), beer_currency)
+	beer, serviceError := bh.serviceBeer.GetBeerByBox(bh.serviceCurrency, beerId, float32(beerQuantity), toCurrency)
 	if serviceError != nil {
 		response.NewDescriptionResponse(serviceError.Message, nil)
 		ctx.JSON(serviceError.Code, response)
@@ -86,7 +87,7 @@ func (bh *BeerHandlers) Create(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, err)
 	}
-	_, serviceError := bh.service.Create(newBeer)
+	_, serviceError := bh.serviceBeer.Create(newBeer)
 	if serviceError != nil {
 		response.NewDescriptionResponse(serviceError.Message, nil)
 		ctx.JSON(serviceError.Code, response)
