@@ -190,4 +190,3 @@ func TestGetAllBeersEmptyService(t *testing.T) {
 		t.Error("Test failed when searching for empty model")
 	}
 }
-
