@@ -34,6 +34,12 @@ docker compose build
 
 # Para construir la imagen y levantar los contenedores
 docker compose up --build
+
+# Para ejecutar los tests
+go test ./... -cover # por si quieren ver el coverage
+go test ./api -cover # para ver por capa
+go test ./services -cover # para ver por capa
+go test ./handlers -cover # para ver por capa
 ```
 
 ### Endpoints
@@ -48,3 +54,4 @@ docker compose up --build
 - Incorporar un logger custom
 - Incorporar autenticación vía por JWT
 - Documentar a través de OpenAPI / Swagger
+- Refactorizar el testing para crear un método de `setup` y limpiar el código
