@@ -15,7 +15,7 @@ import (
 
 var ctx = context.Background()
 
-func getDatabaseURL() string {
+func GetDatabaseURL() string {
 	dbUser := os.Getenv("POSTGRES_USER")
 	dbPassword := os.Getenv("POSTGRES_PASSWORD")
 	dbName := os.Getenv("POSTGRES_DB")
@@ -26,7 +26,7 @@ func getDatabaseURL() string {
 }
 
 func ConnectDatabase() *gorm.DB {
-	dbURL := getDatabaseURL()
+	dbURL := GetDatabaseURL()
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 	if err != nil {
 		panic(errs.NewUnexpectedError("Unable to connect database"))
