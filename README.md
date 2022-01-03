@@ -14,11 +14,14 @@ He utilizado un framework web para Go: **Gin-gonic**, que cuenta con bastante di
 ### Arquitectura:
 Si hay una de las cosas más fascinantes que he visto hasta la fecha con Go, o que me ha permitido comprender bastante bien, ha sido la **Arquitectura Hexagonal**, empecé a investigar en base a un video de CodelyTV y logré ciertos avances. Para este proyecto implementé una aproximación a esta arquitectura, si bien no he sido ortodoxo con la disposición de las carpetas, intenté hacer el *"separation of concerns"* de un modo bastante más legible, otro dato importante que notar en esta arquitectura, es el predominio de la **inyección de dependencias**, podría decir que es la piedra angular de la Arquitectura Hexagonal.
 
+### Testing
+Dado a que la Arquitectura Hexagonal se fundamenta principalmente en la inyección de dependencias, es bastante sencillo hacer _mocks_ de _handlers_ (controladores) y de servicios, todo esto a partir de un paquete llamado **go-mock** que utiliza línea de comandos (preferiblemente) y también marcaje de las interfaces a mockear. Para la base de datos he utilizado **sqlmock** que implica utilizar también **testify** eso para testear los dominios.
+
 ### Diagrama:
 ![Arquitectura Hexagonal](Hexagonal-Architecture-Beers.svg "Diagrama AH Bender Beers")
 
 ### Decisiones:
-- Al momento de escribir este documento, se levantó un servidor en Redis, con la idea de tomar todos los valores de monedas al momento para ser almacenados en Redis, **¿Cuál es la idea detrás de eso? Reducir la cantidad de peticiones, dado a que el plan gratis es de 250 peticiones al mes, podemos reducir eso a 2 o 3 peticiones por día.**
+- Al momento de escribir este documento, se levantó un servidor en Redis, con la idea de tomar todos los valores de monedas al momento para ser almacenados en Redis, **¿Cuál es la idea detrás de eso? Reducir la cantidad de peticiones, dado a que el plan gratis es de 250 peticiones al mes, podemos reducir eso a 2 o 3 peticiones por día.** Para el 03/01/2022 no he hecho la implementación final de este feature.
 
 - **¿Por qué usar GORM y no usar Raw SQL?** La idea detrás de los ORM es siempre la posibilidad de poder incorporar nuevos motores de bases de datos a los repositorios, escribir la implementación de cada consulta, que en muchos casos es menos compleja que usando raw SQL, por ejemplo si se quiere reemplazar PostgreSQL por ElasticSearch teniendo un mínimo impacto, casi nulo en las capas exteriores al dominio.
 
@@ -55,3 +58,5 @@ go test ./handlers -cover # para ver por capa
 - Incorporar autenticación vía por JWT
 - Documentar a través de OpenAPI / Swagger
 - Refactorizar el testing para crear un método de `setup` y limpiar el código
+- Implementar la utilización de Redis para una única petición diaria del precio de las monedas. Dado a que si se omite en la URL de [Currency Layer](http://api.currencylayer.com) un parámetro denominado `currency` y trae todos los valores de cambio de monedas con a partir del dólar norteamericano.
+- Completar y depurar los tests de los dominios (domain).
