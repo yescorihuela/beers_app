@@ -46,7 +46,8 @@ func executeRequest(cre CurrencyRepositoryExternal, fromCurrency, toCurrency str
 	url := fmt.Sprintf("%s/live?access_key=%s&currencies=%s,%s&format=1", baseUrl, accessKey, fromCurrency, toCurrency)
 	response, err := cre.client.Get(url)
 	if err != nil {
-		return nil, &errs.AppError{Message: err.Error(), Code: http.StatusInternalServerError}
+
+		return nil, errs.NewUnexpectedError(err.Error())
 	}
 	defer response.Body.Close()
 

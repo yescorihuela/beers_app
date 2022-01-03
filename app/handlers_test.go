@@ -36,6 +36,26 @@ func TestGetAllBeersHandler(t *testing.T) {
 	}
 }
 
+func TestGetAllBeersNotFoundHandler(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockService := mocks.NewMockBeerService(ctrl)
+
+	dummyError := errs.NewNotFoundError("Error")
+
+	mockService.EXPECT().GetAllBeers().Return(nil, dummyError)
+	bh := BeerHandlers{serviceBeer: mockService}
+	r := gin.Default()
+	r.GET("/beers", bh.GetAllBeers)
+
+	request, _ := http.NewRequest(http.MethodGet, "/beers", nil)
+	recorder := httptest.NewRecorder()
+	r.ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusNotFound {
+		t.Error("Failed while testing the status code")
+	}
+}
+
 func TestGetBeerHandler(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -146,6 +166,33 @@ func TestGetBeerByBoxHandler(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	r.ServeHTTP(recorder, request)
 	if recorder.Code != http.StatusOK {
+		t.Error("Failed while testing the status code")
+	}
+}
+
+func TestGetBeerByBoxNotFoundHandler(t *testing.T) {
+	controllerBeerService := gomock.NewController(t)
+	controllerCurrencyService := gomock.NewController(t)
+	defer controllerBeerService.Finish()
+	defer controllerCurrencyService.Finish()
+	mockServiceBeer := mocks.NewMockBeerService(controllerBeerService)
+	mockCurrencyService := mocks.NewMockCurrencyService(controllerCurrencyService)
+
+	dummyError := errs.NewUnexpectedError("Error")
+	beerDummyParam := 1
+	quantityDummyParam := float32(6.0)
+	currencyDummyParam := "EUR"
+
+	mockServiceBeer.EXPECT().GetBeerByBox(mockCurrencyService, beerDummyParam, quantityDummyParam, currencyDummyParam).Return(nil, dummyError)
+	bh := BeerHandlers{serviceBeer: mockServiceBeer, serviceCurrency: mockCurrencyService}
+	r := gin.Default()
+	r.GET("/beers/:id/boxprice", bh.GetBeerByBox)
+	url := fmt.Sprintf("/beers/%d/boxprice?currency=EUR&quantity=6", beerDummyParam)
+
+	request, _ := http.NewRequest(http.MethodGet, url, nil)
+	recorder := httptest.NewRecorder()
+	r.ServeHTTP(recorder, request)
+	if recorder.Code != http.StatusInternalServerError {
 		t.Error("Failed while testing the status code")
 	}
 }

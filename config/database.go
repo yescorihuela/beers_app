@@ -29,7 +29,7 @@ func ConnectDatabase() *gorm.DB {
 	dbURL := getDatabaseURL()
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 	if err != nil {
-		log.Fatalln(err)
+		panic(errs.NewUnexpectedError("Unable to connect database"))
 	}
 
 	db.AutoMigrate(&domain.Beer{})
