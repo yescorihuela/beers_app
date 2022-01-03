@@ -21,9 +21,9 @@ Dado a que la Arquitectura Hexagonal se fundamenta principalmente en la inyecci�
 ![Arquitectura Hexagonal](Hexagonal-Architecture-Beers.svg "Diagrama AH Bender Beers")
 
 ### Decisiones:
-- Al momento de escribir este documento, se levantó un servidor en Redis, con la idea de tomar todos los valores de monedas al momento para ser almacenados en Redis, **¿Cuál es la idea detrás de eso? Reducir la cantidad de peticiones, dado a que el plan gratis es de 250 peticiones al mes, podemos reducir eso a 2 o 3 peticiones por día.** Para el 03/01/2022 no he hecho la implementación final de este feature.
+- Al momento de escribir este documento, se levantó un servidor en Redis, con la idea de tomar todos los valores de monedas al momento para ser almacenados en Redis, **¿Cuál es la idea detrás de eso? Reducir la cantidad de peticiones, dado a que el plan gratis es de 250 peticiones al mes, podemos reducir eso a 2 o 3 peticiones por día.** Para el 03/01/2022 no he hecho la implementación final de este feature (Ver punto 5 del apartado Pendientes)
 
-- **¿Por qué usar GORM y no usar Raw SQL?** La idea detrás de los ORM es siempre la posibilidad de poder incorporar nuevos motores de bases de datos a los repositorios, escribir la implementación de cada consulta, que en muchos casos es menos compleja que usando raw SQL, por ejemplo si se quiere reemplazar PostgreSQL por ElasticSearch teniendo un mínimo impacto, casi nulo en las capas exteriores al dominio.
+- **¿Por qué usar GORM y no usar Raw SQL?** La idea detrás de los ORM es siempre la posibilidad de poder incorporar nuevos motores de bases de datos a los repositorios, escribir la implementación de cada consulta, es posible también no escribir tanto SQL sino ir al grano a partir de lo que dispone el ORM, que en muchos casos es menos compleja que usando raw SQL, por ejemplo si se quiere reemplazar PostgreSQL por ElasticSearch teniendo un mínimo impacto, casi nulo en las capas exteriores al dominio.
 
 - **¿Por qué usar Gin-Gonic y no usar Mux u otro framework (Echo o Fiber2 por ejemplo)?** Principalmente porque es el framework con el que más tiempo he reunido experiencia, tiene un alto performance, quizás no el mayor pero está dentro de los mejores y hay mucha documentación y comunidad alrededor de Gin-gonic, por otro lado posee una serie de características que lo hacen muy atractivo: Un logging en modo debug bien informativo, incluyendo la velocidad de la peticiones, sin embargo es bastante flexible para configurar middlewares y loggers definidos por el desarrollador.
 
@@ -54,9 +54,9 @@ go test ./handlers -cover # para ver por capa
 | localhost:8082/beers/:id/boxprice?currency=XXX&quantity=YYY | GET        | Obtener una cerveza por su ID con un valor en otra moneda y por caja/lote | 200: Price Total: xxxxx.yyy                                                       |
 
 ### Pendientes:
-- Incorporar un logger custom
-- Incorporar autenticación vía por JWT
-- Documentar a través de OpenAPI / Swagger
-- Refactorizar el testing para crear un método de `setup` y limpiar el código
-- Implementar la utilización de Redis para una única petición diaria del precio de las monedas. Dado a que si se omite en la URL de [Currency Layer](http://api.currencylayer.com) un parámetro denominado `currency` y trae todos los valores de cambio de monedas con a partir del dólar norteamericano.
-- Completar y depurar los tests de los dominios (domain).
+1. Incorporar un logger custom
+2. Incorporar autenticación vía por JWT
+3. Documentar a través de OpenAPI / Swagger
+4. Refactorizar el testing para crear un método de `setup` y limpiar el código
+5. Implementar la utilización de Redis para una única petición diaria del precio de las monedas. Dado a que si se omite en la URL de [Currency Layer](http://api.currencylayer.com) un parámetro denominado `currency` y trae todos los valores de cambio de monedas con a partir del dólar norteamericano.
+6. Completar y depurar los tests de los dominios (domain).
